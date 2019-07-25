@@ -327,9 +327,10 @@ AttributeError: myClass instance has no attribute '__superprivate'
 
 `__foo__`:一种约定,Python内部的名字,用来区别其他用户自定义的命名,以防冲突，就是例如`__init__()`,`__del__()`,`__call__()`这些特殊方法
 
-`_foo`:一种约定,用来指定变量私有.程序员用来指定私有变量的一种方式.不能用from module import * 导入，其他方面和公有一样访问；
+`_foo`:一种约定,用来指定变量私有变量.程序员用来指定私有变量的一种方式，只有类与子类可以访问.不能用from module import * 导入，其他方面和公有一样访问；
 
 `__foo`:这个有真正的意义:解析器用`_classname__foo`来代替这个名字,以区别和其他类相同的命名,它无法直接像公有成员一样随便访问,通过对象名._类名__xxx这样的方式可以访问.
+
 
 详情见:http://stackoverflow.com/questions/1301346/the-meaning-of-a-single-and-a-double-underscore-before-an-object-name-in-python
 
@@ -436,6 +437,22 @@ http://stackoverflow.com/questions/3394835/args-and-kwargs
 这个AOP一听起来有点懵,同学面阿里的时候就被问懵了...
 
 装饰器是一个很著名的设计模式，经常被用于有切面需求的场景，较为经典的有插入日志、性能测试、事务处理等。装饰器是解决这类问题的绝佳设计，有了装饰器，我们就可以抽离出大量函数中与函数功能本身无关的雷同代码并继续重用。概括的讲，**装饰器的作用就是为已经存在的对象添加额外的功能。**
+装饰器的一个例子.例如:
+
+```
+from functools import wraps
+from flask import session,redirect,url_for
+
+#登陆限制装饰器,只有登陆了才能发布问答
+def login_required(func):
+    @wraps(func)
+    def wrapper(*args,**kwargs):
+        if session.get('user_id'):
+            return func(*args,**kwargs)   #注意要return
+        else:
+            return redirect(url_for('login'))
+    return wrapper
+```
 
 这个问题比较大,推荐: http://stackoverflow.com/questions/739654/how-can-i-make-a-chain-of-function-decorators-in-python
 
@@ -520,10 +537,23 @@ ps: `__metaclass__`是创建类时起作用.所以我们可以分别使用`__met
 
 ## 16 单例模式
 
-> ​	单例模式是一种常用的软件设计模式。在它的核心结构中只包含一个被称为单例类的特殊类。通过单例模式可以保证系统中一个类只有一个实例而且该实例易于外界访问，从而方便对实例个数的控制并节约系统资源。如果希望在系统中某个类的对象只能存在一个，单例模式是最好的解决方案。
+> ​	单例模式是一种常用的软件设计模式。在它的核心结构中只包含一个被称为单例类的特殊类。通过单例模式可以**保证系统中一个类只有一个实例而且该实例易于外界访问，从而方便对实例个数的控制并节约系统资源。**如果希望在系统中某个类的对象只能存在一个，单例模式是最好的解决方案。
 >
 > `__new__()`在`__init__()`之前被调用，用于生成实例对象。利用这个方法和类的属性的特点可以实现设计模式的单例模式。单例模式是指创建唯一对象，单例模式设计的类只能实例
 **这个绝对常考啊.绝对要记住1~2个方法,当时面试官是让手写的.**
+> 在它的核心结构中只包含一个被称为单例的特殊类。通过单例模式可以保证系统中，应用该模式的类只有一个实例。
+对于系统中的某些类来说，只有一个实例很重要，例如，一个系统只能有一个计时工具或ID(序号)生成器。
+单例模式的要点有三个;
+一是某个类只能有一个实例;
+二是它必须自行创建这个实例;
+三是它必须自行向整个系统提供这个实例。
+在 Python 中，我们可以用多种方法来实现单例模式：
+
+使用模块
+使用 new
+使用装饰器（decorator）
+使用元类（metaclass）
+使用模块
 
 ### 1 使用`__new__`方法
 
