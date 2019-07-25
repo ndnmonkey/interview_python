@@ -706,6 +706,10 @@ reduce函数是对一个序列的每个项迭代调用函数，下面是求3的�
 ## 23 Python里的拷贝
 
 引用和copy(),deepcopy()的区别
+如果拷贝对象是不可变类型，则是对象的引用，
+如果是可变类型，则只拷贝父对象，不会拷贝对象的内部的子对象（如果只有一层，则和深拷贝无区别）。 
+list是可变对象，不是引用，所以只拷贝父对象，不拷贝子对象。
+注意：string，number，tuple不可变，其他都可变。
 
 ```python
 import copy
@@ -779,6 +783,24 @@ is是对比地址,==是对比值
 推荐：[Python 2.7.x 与 Python 3.x 的主要差异](http://chenqx.github.io/2014/11/10/Key-differences-between-Python-2-7-x-and-Python-3-x/)
 
 ## 29 super init
+```python
+#super() 函数是用于调用父类(超类)的一个方法。
+#super 是用来解决多重继承问题的，直接用类名调用父类方法在使用单继承的时候没问题，但是如果使用多继承，会涉及到查找顺序（MRO）、重复调用（钻石继承）等种种问题。
+#MRO 就是类的方法解析顺序表, 其实也就是继承父类方法时的顺序表。
+class A:
+    def add(self, x):
+        y = x + 1
+        print(y)
+
+class B(A):
+    def add(self, x):
+        super().add(x)
+
+b = B()
+b.add(2)  # 3
+```
+
+
 super() lets you avoid referring to the base class explicitly, which can be nice. But the main advantage comes with multiple inheritance, where all sorts of fun stuff can happen. See the standard docs on super if you haven't already.
 
 Note that the syntax changed in Python 3.0: you can just say super().`__init__`() instead of super(ChildB, self).`__init__`() which IMO is quite a bit nicer.
